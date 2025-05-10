@@ -8,6 +8,7 @@ class Game:
         self.grid = [[None for _ in range(GRID_WIDTH)] for _ in range(GRID_HEIGHT)]
         self.current_piece = Tetromino(GRID_WIDTH // 2 - 2, 0)
         self.game_over = False
+        self.score = 0
 
     def valid_position(self, shape, offset_x, offset_y):
         for y, row in enumerate(shape):
@@ -35,9 +36,24 @@ class Game:
             self.game_over = True
 
     def clear_lines(self):
-        self.grid = [row for row in self.grid if any(cell is None for cell in row)]
-        while len(self.grid) < GRID_HEIGHT:
-            self.grid.insert(0, [None for _ in range(GRID_WIDTH)])
+        new_grid = []
+        lines_cleared = 0
+        for row in self.grid:
+            if all(cell is not None for cell in row):
+                lines_cleared += 1
+            else:
+                new_grid.append(row)
+
+        while len(new_grid) < GRID_HEIGHT:
+            new_grid.insert(0, [None for _ in range(GRID_WIDTH)])
+        
+        self.grid = new_grid
+        self.score += scores.get(lines_cleared, 0)
+
+    # def clear_lines(self):
+        # self.grid = [row for row in self.grid if any(cell is None for cell in row)]
+        # while len(self.grid) < GRID_HEIGHT:
+        #     self.grid.insert(0, [None for _ in range(GRID_WIDTH)])
 
     def move(self, dx, dy):
         if self.valid_position(self.current_piece.shape, self.current_piece.x + dx, self.current_piece.y + dy):
@@ -76,6 +92,6 @@ class Game:
                     pygame.draw.rect(
                         screen,
                         COLORS[self.current_piece.color],
-                        ((self.current_piece.x + x)*CELL_SIZE, (self.current_piece.y + y)*CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                        ((self.current_piece.x + x)*CELL_SIZE, (self.current_piece.y + y)*CELL_SIZE, CELL_SIZE, CELL_SIZE),
                     )
 

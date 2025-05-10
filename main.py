@@ -38,6 +38,7 @@ while running:
 
     if game.game_over:
         print("Game Over")
+        print(f"score: {game.score}")
         pygame.time.wait(2000)
         running = False
 
